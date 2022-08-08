@@ -384,7 +384,40 @@ function QBCore.Functions.AttachProp(ped, model, boneId, x, y, z, xR, yR, zR, ve
     SetModelAsNoLongerNeeded(modelHash)
     return prop
 end
+-- fishing 
+function QBCore.Functions.SpawnObject(model, coords, cb)
+    local model = (type(model) == 'number' and model or GetHashKey(model))
 
+    Citizen.CreateThread(function()
+        RequestModel(model)
+        local obj = CreateObject(model, coords.x, coords.y, coords.z, true, false, true)
+        SetModelAsNoLongerNeeded(model)
+
+        if cb then
+            cb(obj)
+        end
+    end)
+end
+
+function QBCore.Functions.SpawnLocalObject(model, coords, cb)
+    local model = (type(model) == 'number' and model or GetHashKey(model))
+
+    Citizen.CreateThread(function()
+        RequestModel(model)
+        local obj = CreateObject(model, coords.x, coords.y, coords.z, false, false, true)
+        SetModelAsNoLongerNeeded(model)
+
+        if cb then
+            cb(obj)
+        end
+    end)
+end
+
+function QBCore.Functions.DeleteObject(object)
+    SetEntityAsMissionEntity(object, false, true)
+    DeleteObject(object)
+end
+--fihsing end
 -- Vehicle
 
 function QBCore.Functions.SpawnVehicle(model, cb, coords, isnetworked, teleportInto)
